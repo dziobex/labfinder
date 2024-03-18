@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "parsec.h"
 
 // sprawdzenie czy labirynt z pliku jest DOBRY
 // czyli: 1 in, 1 out, wszystkie wiersze/kolumny mają taki sam rozmiar dla swojego typu
@@ -105,8 +106,20 @@ int main ( int argx, char **argv ) {
 
     printf("rows count: %hd\ncolumns count: %hd\n", *r, *c );
 
-    free(in);
-    free(test);
+    coordinate test_coords;   
+    //mass-testing if my calcs are correct
+    for (short num1 = 256; num1 < 257; ++num1) {
+        for (short num2 = 0; num2 < *c; ++num2) {
+            test_coords.x = num1;
+            test_coords.y = num2;
+            shift_pos(test, test_coords, r);
+            parametrize(test, r);
+        }
+    }
+
+    fclose(in);
+    //free(in); why were we doing this instead of fclose again?
+    fclose(test);
 
     free(r);
     free(c);
