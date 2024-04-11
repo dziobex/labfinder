@@ -1,0 +1,6 @@
+Do dokumentacji dopisać:
+1. jak powinien wyglądać labirynt wejściowy, tzn. ścianki grubości 1, limity wielkościowe, PRZYNAJMNIEJ JEDNA ŚCIANKA NA CAŁY RZĄD/KOLUMNE
+2. dodać jakieś rysunki/zarys pomysłu wyrysowany na kartce, by podbić serca prowadzących, że nad projektem myśli się wszędzie i zawsze ( ͡ಥ ͜ʖ ͡ಥ)
+3. jakiś żart słowny
+
+W /docs/ są pliki z opisem metody kompresji labiryntu i analizy jednego z samplesów

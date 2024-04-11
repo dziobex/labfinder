@@ -7,25 +7,38 @@ bit_pair get_bit_cords(short x) {
     return cord;
 }
 
-void encode(FILE* input_file, char coding_type, byte maze[][256], bit_pair* maze_size) {
+void encode(FILE* input_file, char coding_type, byte maze_struct[][256], bit_pair* maze_size) {
     // for now, the assumptions are:
     // only type 0 (texted) is delivered, maze isn't damaged
 
     char c;
     short x = 0, y = 0;
     while ((c=getc(input_file)) != EOF) {
-        if (c == 10) {
+        if (c == 10) {  // going to the next line
             ++y;
-            maze_size->x = x;
+            if (maze_size->x == 0)
+                maze_size->x = x / 2;
             x = 0;
-        } else if (c == ' ' || c == 'X') {
-            bit_pair cord = get_bit_cords(x);
-            if (c == 'X')
-                SETBIT(maze[y][cord.y], 7-cord.x, 1);
-            else
-                SETBIT(maze[y][cord.y], 7-cord.x, 0);
-            ++x;
+            continue;
         }
+
+        if (x != 0 && y != 0 ) {
+            short cell_y = (y / 2) - 1;
+            short cell_x = (x / 2) - 1;
+            bit_pair _x = get_bit_cords(cell_x * 2);
+
+            if (y % 2 == 0 && x % 2 != 0) {     // WALLS info (for rows =)
+                cell_x++;
+                _x = get_bit_cords(cell_x * 2);
+                SETBIT(maze_struct[(int)cell_y][(int)_x.y], 7 - _x.x, c == 'X' ? 1 : 0);
+            }
+            else if (x % 2 == 0 && y % 2 != 0) {     // WALLS info (for columns ||)
+                cell_y++;
+                SETBIT(maze_struct[(int)cell_y][(int)_x.y], 7 - _x.x - 1, c == 'X' ? 1 : 0);
+            }
+        }
+
+        ++x;
     }
-    maze_size->y = y + 1;
+    maze_size->y = (y) / 2;
 }
