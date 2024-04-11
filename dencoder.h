@@ -9,5 +9,7 @@ typedef struct {
 } bit_pair;
 
 bit_pair get_bit_cords(short x);
-
 void encode(FILE* input_file, char coding_type, byte maze_struct[][256], bit_pair* maze_size);
+
+// binary representation of the given number
+void read_bits(byte bitter);

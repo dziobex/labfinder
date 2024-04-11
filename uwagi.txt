@@ -4,3 +4,5 @@ Do dokumentacji dopisać:
 3. jakiś żart słowny
 
 W /docs/ są pliki z opisem metody kompresji labiryntu i analizy jednego z samplesów
+
+为 dziobex (笨蛋):

@@ -42,3 +42,9 @@ void encode(FILE* input_file, char coding_type, byte maze_struct[][256], bit_pai
     }
     maze_size->y = (y) / 2;
 }
+
+void read_bits(byte bitter) {
+    for ( int i = 7; i >= 0; --i) {
+        printf("%d", (bitter >> i) & 0x01);
+    }
+}

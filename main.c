@@ -13,17 +13,21 @@ int main( int argc, char** argv ) {
 
     bit_pair maze_size;
 
-    FILE* in = fopen("samples/05.txt", "r");
+    FILE* in = fopen("samples/01.txt", "r");
     encode(in, 0, maze_struct, &maze_size);
 
     printf("Dims of the maze: %d x %d\n", maze_size.y, maze_size.x);
 
+
+    /*
     for ( int i = 0; i < maze_size.y; ++i ) {
-        for ( int j = 0; j <= maze_size.x / (8/2); ++j ) {
-            printf("%d ", maze_struct[i][j]);
+        for ( int j = 0; j <= maze_size.x / 8; ++j ) {
+            read_bits(maze_struct[i][j]);
+            printf(" ");
         }
         printf("\n");
     }
+    */
 
     return EXIT_SUCCESS;
 }
