@@ -3,4 +3,4 @@
 *.obj
 *.exe
 .vscode/
-test/
+.test/
