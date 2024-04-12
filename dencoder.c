@@ -10,9 +10,6 @@ bit_pair get_bit_cords(short x) {
 byte encode_txt(FILE* input_file, byte maze_struct[][256],
     bit_pair* maze_size, maze_cord* in_cord, maze_cord* out_cord) {
 
-    // for now, the assumptions are:
-    // only type 0 (texted) is delivered, maze isn't damaged
-
     in_cord->x = in_cord->y = 1111;
     out_cord->x = out_cord->y = 1111;
 
