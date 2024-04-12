@@ -1,69 +1,92 @@
 #include "binny.h"
 
-void read_bits(byte bitter) {
-    for ( size_t i = 7; i >= 0; --i) {
-        printf("%d", (bitter >> i) & 0x01);
-    }
-}
+byte encode_binary(FILE* input_file, byte maze[][256]) {
 
-byte encode_binary(FILE* input_file) {
+    // 1. handling the HEADER section
 
-    // HEADER //
+    binary_data bd; // a container for (useless) data
 
-    bin_data bd; // useless data
+    // problem z wczytywaniem id'ka
+    if ( fread(&bd.file_id, 4, 1, input_file) != 1 )
+        return 1;
+    if ( fread(&bd.esc, 1, 1, input_file) != 1 )
+        return 1;
 
-    fread(&(bd.file_id), sizeof(uint32_t), 1, input_file);
-    printf("ID pliku: 0x%X\n", bd.file_id);
-    fread(&(bd.esc), sizeof(uint8_t), 1, input_file);
+    binary_pair dims, entry, exit;
 
-    uint16_t columns, rows;
-    fread(&columns, sizeof(uint16_t), 1, input_file);
-    fread(&rows, sizeof(uint16_t), 1, input_file);
+    // problem with getting maze dims
+    if ( fread(&dims.x, sizeof(uint16_t), 1, input_file) != 1 )
+        return 1;
+    if ( fread(&dims.y, sizeof(uint16_t), 1, input_file) != 1 )
+        return 1;
+    --dims.x;
+    --dims.y;
 
-    columns--;rows--;
+    if ( fread(&entry.x, sizeof(uint16_t), 1, input_file) != 1 )
+        return 1;
+    if ( fread(&entry.y, sizeof(uint16_t), 1, input_file) != 1 )
+        return 1;
+    --entry.x;
+    --entry.y;
 
-    printf("Liczba kolumn: %d\nLiczba wierszy: %d\n", columns, rows);
+    if ( fread(&exit.x, sizeof(uint16_t), 1, input_file) != 1 )
+        return 1;
+    if ( fread(&exit.y, sizeof(uint16_t), 1, input_file) != 1)
+        return 1;
+    --exit.x;
+    --exit.y;
 
-    gate entry, exit;
+    // getting the 'reserved' stuff
+    if ( fread(&bd.reserved, sizeof(uint8_t), 12, input_file) != 12 )
+        return 1;
 
-    fread(&(entry.x), sizeof(uint16_t), 1, input_file);
-    fread(&(entry.y), sizeof(uint16_t), 1, input_file);
-    entry.x--;entry.y--;
-
-    fread(&(exit.x), sizeof(uint16_t), 1, input_file);
-    fread(&(exit.y), sizeof(uint16_t), 1, input_file);
-    exit.x--;exit.y--;
-
-    printf("Wejscie: (%d, %d)\nWyjscie: (%d, %d)\n", entry.x, entry.y, exit.x, exit.y);
-
-    fread(&(bd.reserved), sizeof(uint8_t), 12, input_file);
-
-    uint32_t codes_offset, solution_offset;
-    fread(&(codes_offset), sizeof(uint32_t), 1, input_file);
-    fread(&(solution_offset), sizeof(uint32_t), 1, input_file);
+    binary_data codes;
+    if ( fread(&codes.counter, sizeof(uint32_t), 1, input_file) != 1 )
+        return 1;
+    fread(&bd.solution_offset, sizeof(uint32_t), 1, input_file);    // no need for this for now
 
     uint8_t separator, wall, path;
-
     fread(&separator, sizeof(uint8_t), 1, input_file);
     fread(&wall, sizeof(uint8_t), 1, input_file);
     fread(&path, sizeof(uint8_t), 1, input_file);
 
-    printf("Liczba slow kodowych: %d\nZnaczniki:\n\tseparator: %c\n\tsciana: %c\n\tsciezka: %c\n",
-        codes_offset, separator, wall, path);
-
     uint8_t sep, val, count;
-    codes_offset;
 
-    uint16_t do_space = 0;
+    // 2. handling the CODING section
 
-    // CODING WORDS //
+    bit_pair tracked_dims;
+    tracked_dims.x = tracked_dims.y = 0;
     
-    for ( ; codes_offset > 0; --codes_offset ) {
+    for ( ; codes.counter > 0; --codes.counter ) {
         fread(&sep, sizeof(uint8_t), 1, input_file);
         fread(&val, sizeof(uint8_t), 1, input_file);
         fread(&path, sizeof(uint8_t), 1, input_file);
 
-        for ( size_t i = 0; i <= path; ++i )
+        for ( size_t i = 0; i <= path; ++i ) {
+            if ( tracked_dims.x >= dims.x ) {
+                tracked_dims.y++;
+                tracked_dims.x = 0;
+            }
             printf("%c", val);
+            ++tracked_dims.x;
+        }
     }
+
+    // the 3. and 4. sections are ommitted during maze encoding
+    // they can exist, but here we just don't care
+
+    /*
+        when errors may occur:
+        -user is stupid
+        -dimensions are too small/big
+        -counter (coding words) is smaller than (2xCOLS+1)*(2xROWS+1)
+        -gates are out of range
+        -missing section/section's part
+        -user forgot what character it's signed for sep/wall/path XD
+        !!!user is stupid!!!
+    */
+
+   /*
+        -add to each 'fread' stuff: if case to check if the file IS NOT IN THE BERSERKER MODE HAIIIIYAYO 
+   */
 }

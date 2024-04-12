@@ -1,3 +1,5 @@
+#pragma pack(1)
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -12,16 +14,14 @@ typedef struct {
 typedef struct {
     uint16_t x;
     uint16_t y;
-} gate;
+} binary_pair;
 
 typedef union {
     uint32_t file_id;
     uint8_t esc;
-    uint8_t reserved;
+    uint8_t reserved;   // 8*12=96
     uint32_t counter;
     uint32_t solution_offset;
-} bin_data;
+} binary_data;
 
-bit_pair get_bit_cords(short x);
-
-byte encode_binary(FILE* input_file);
+byte encode_binary(FILE* input_file, byte maze[][256]);

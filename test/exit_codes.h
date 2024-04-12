@@ -1,6 +1,6 @@
 #pragma once
 
-// error codes:
+// error codes (mainly for .txt format):
 
 #define LINES_NOT_EQUAL 1
 #define MULTI_ENTRANCE 2
