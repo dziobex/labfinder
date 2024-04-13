@@ -8,13 +8,9 @@ Co zostało do zrobienia:
 -plik makefile
 -dokumentacja do poprawy
 -zapis drogi do .txt
--odczyt laba z binarki
--walidacja binarki
+-odczyt laba z binarki: połowa zrobiona
 -zapis laba&drogi do binarki
 -bfs
 -valgrind check
 
-W /docs/ są pliki z opisem metody kompresji labiryntu i analizy jednego z samplesów
-
-为 dziobex (笨蛋):
--encode ma zwracać również cordy wejścia/wyjścia
+W docs/ są pliki z opisem metody kompresji labiryntu i analizy jednego z samplesów

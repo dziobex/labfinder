@@ -16,9 +16,9 @@ int main( int argc, char** argv ) {
     bit_pair maze_size;
     maze_cord in_cord, out_cord;                      // punkty wejścia/wyjścia
 
-    FILE* in = fopen("samples/00.txt", "r");
+    FILE* in = fopen("samples/gruby.txt", "r");
 
-    byte get_code = encode_txt(in, maze_struct, &maze_size, &in_cord, &out_cord);
+    byte get_code = decode_txt(in, maze_struct, &maze_size, &in_cord, &out_cord);
     
     fclose(in);
 
