@@ -8,7 +8,6 @@ Co zostało do zrobienia:
 -plik makefile
 -dokumentacja do poprawy
 -zapis drogi do .txt
--odczyt laba z binarki: połowa zrobiona
 -zapis laba&drogi do binarki
 -bfs
 -valgrind check
