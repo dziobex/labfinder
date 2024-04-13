@@ -1,0 +1,15 @@
+Do dokumentacji dopisać:
+1. jak powinien wyglądać labirynt wejściowy, tzn. ścianki grubości 1, limity wielkościowe, PRZYNAJMNIEJ JEDNA ŚCIANKA NA CAŁY RZĄD/KOLUMNE
+2. dodać jakieś rysunki/zarys pomysłu wyrysowany na kartce, by podbić serca prowadzących, że nad projektem myśli się wszędzie i zawsze ( ͡ಥ ͜ʖ ͡ಥ)
+3. jakiś żart słowny
+
+Co zostało do zrobienia:
+-getopt, args handling
+-plik makefile
+-dokumentacja do poprawy
+-zapis drogi do .txt
+-zapis laba&drogi do binarki
+-bfs
+-valgrind check
+
+W docs/ są pliki z opisem metody kompresji labiryntu i analizy jednego z samplesów

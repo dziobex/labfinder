@@ -1,3 +1,7 @@
 *.o
 *.out
+*.obj
+*.exe
 .vscode/
+.test/
+a.txt
