@@ -13,17 +13,24 @@ byte decode_txt(FILE* input_file, byte maze_struct[][256],
     in_cord->x = in_cord->y = 1111;
     out_cord->x = out_cord->y = 1111;
 
+    // JANOS JONOS TU BYŁ - "k00pa" <--- TO MÓJ CHŁOPAK!!!!!
     char c;
     short x = 0, y = 0;
     while ((c=getc(input_file)) != EOF) {
-        if (c == 10) {      // going to the next line
+        if (c == 10) {                              // going to the next line
+            if ( x == 0 )
+                continue;                           // random empty lines in the file are ignored - mistakes happen!
             ++y;
-            if (maze_size->x == 0)
+            if (x != 0 && maze_size->x == 0)
                 maze_size->x = x;
             else if (maze_size->x != x)
-                return LINES_NOT_EQUAL;   // rows aren't equal, this maze is mazzed up 😭
+                return LINES_NOT_EQUAL;             // rows aren't equal, this maze is mazzed up 😭
             x = 0;
             continue;
+        }
+        
+        if ( c != 'X' && c != ' ' && c != 'P' && c != 'K' && c != '\n' ) {
+            printf("%c ", c);
         }
         if ((c == 'X' || c == ' ') && x != 0 && y != 0 ) {
             short cell_y = (y / 2) - 1;
@@ -35,7 +42,7 @@ byte decode_txt(FILE* input_file, byte maze_struct[][256],
                 _x = get_bit_cords(cell_x * 2);
                 SETBIT(maze_struct[(int)cell_y][(int)_x.y], 7 - _x.x, c == 'X' ? 1 : 0);
             }
-            else if (x % 2 == 0 && y % 2 != 0) {     // WALLS info (for columns ||)
+            else if (x % 2 == 0 && y % 2 != 0) {    // WALLS info (for columns ||)
                 cell_y++;
                 SETBIT(maze_struct[(int)cell_y][(int)_x.y], 7 - _x.x - 1, c == 'X' ? 1 : 0);
             }
@@ -54,7 +61,7 @@ byte decode_txt(FILE* input_file, byte maze_struct[][256],
         }
         ++x;
     }
-    maze_size->x = x / 2;
+    maze_size->x /= 2;
     maze_size->y = y / 2;
 
     printf("%d %d ", maze_size->x, maze_size->y);
