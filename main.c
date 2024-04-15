@@ -61,8 +61,6 @@ int main(int argc, char **argv)
         in = fopen(in_file, "rb");
         if (in == NULL)
             return fprintf(stderr, "Nie udalo sie otworzyc pliku wejsciowego :(\n"), EXIT_FAILURE;
-
-            printf("AAAA");
         get_code = decode_binary(in, maze_struct, &maze_size, &in_cord, &out_cord);
     } else
         return fprintf(stderr, "Nieprawidlowy typ kodowania pliku wsadowego!\nSprobuj tych: tekstowy (t), binarny (b)\n"), EXIT_FAILURE;
@@ -77,6 +75,7 @@ int main(int argc, char **argv)
         case 0:
             printf("Labirynt zaakceptowany.\n");
             break;
+        case INVALID_DIMS:
         case LINES_NOT_EQUAL:
             printf("Nieprawidlowe rozmiary podanego labiryntu.\n");
             return EXIT_FAILURE;
@@ -88,6 +87,15 @@ int main(int argc, char **argv)
             return EXIT_FAILURE;
         case NO_ENTRANCE:
             printf("Brakuje punktu wejscia/wyjscia.\n");
+            return EXIT_FAILURE;
+        case INVALID_STRUCTURE:
+            printf("Struktura kodowania podanego pliku jest nieprawidlowa.\n");
+            return EXIT_FAILURE;
+        case INVALID_GATE:
+            printf("Nieprawidlowe koordynaty punktu wejscia/wyjscia.\n");
+            return EXIT_FAILURE;
+        case INVALID_CHARACTERS:
+            printf("Uzyto nieprawidlowych znakow do kodowania labiryntu.\n");
             return EXIT_FAILURE;
     }
     

@@ -13,10 +13,13 @@ byte decode_txt(FILE* input_file, byte maze_struct[][256],
     in_cord->x = in_cord->y = 1111;
     out_cord->x = out_cord->y = 1111;
 
-    // JANOS JONOS TU BYŁ - "k00pa" <--- TO MÓJ CHŁOPAK!!!!!
     char c;
     short x = 0, y = 0;
     while ((c=getc(input_file)) != EOF) {
+
+        if ( c != 'X' && c != ' ' && c != 'P' && c != 'K' && c != '\n' && c != 10 )
+            return INVALID_STRUCTURE;
+
         if (c == 10) {                              // going to the next line
             if ( x == 0 )
                 continue;                           // random empty lines in the file are ignored - mistakes happen!
@@ -29,9 +32,6 @@ byte decode_txt(FILE* input_file, byte maze_struct[][256],
             continue;
         }
         
-        if ( c != 'X' && c != ' ' && c != 'P' && c != 'K' && c != '\n' ) {
-            printf("%c ", c);
-        }
         if ((c == 'X' || c == ' ') && x != 0 && y != 0 ) {
             short cell_y = (y / 2) - 1;
             short cell_x = (x / 2) - 1;
@@ -64,6 +64,9 @@ byte decode_txt(FILE* input_file, byte maze_struct[][256],
     maze_size->x /= 2;
     maze_size->y = y / 2;
 
+    if ( maze_size->x < 1 || maze_size->x > 2049  || maze_size->y < 1 || maze_size->y > 2049 )
+        return INVALID_DIMS;
+
     // printf("%d %d ", maze_size->x, maze_size->y);
 
     if ( maze_size->y == 0 || maze_size->x == 0)
@@ -80,8 +83,9 @@ byte decode_binary(FILE* input_file, byte maze_struct[][256], bit_pair* maze_siz
 
     binary_data bd; // a container for (useless) data
 
+
     // problems with getting the file ID (structure thing)
-    if ( fread(&bd.file_id, 4, 1, input_file) != 1 || fread(&bd.esc, 1, 1, input_file) != 1 )
+    if ( fread(&bd.file_id, sizeof(uint16_t), 1, input_file) != 1 || bd.file_id != 0x52524243 || fread(&bd.esc, 1, 1, input_file) != 1 || bd.esc != 0x1B )
         return INVALID_STRUCTURE;
 
     binary_pair dims, entry, exit;
@@ -150,12 +154,10 @@ byte decode_binary(FILE* input_file, byte maze_struct[][256], bit_pair* maze_siz
                 tracked_dims.y++;
                 tracked_dims.x = 0;
             }
-
             if (tracked_dims.x != 0 && tracked_dims.y != 0 ) {
                 short cell_y = (tracked_dims.y / 2) - 1;
                 short cell_x = (tracked_dims.x / 2) - 1;
                 bit_pair _x = get_bit_cords(cell_x * 2);
-
                 if (tracked_dims.y % 2 == 0 && tracked_dims.x % 2 != 0) {         // WALLS info (for rows =)
                     cell_x++;
                     _x = get_bit_cords(cell_x * 2);
@@ -166,7 +168,6 @@ byte decode_binary(FILE* input_file, byte maze_struct[][256], bit_pair* maze_siz
                     SETBIT(maze_struct[(int)cell_y][(int)_x.y], 7 - _x.x - 1, val == wall ? 1 : 0);
                 }
             }
-
             ++tracked_dims.x;
         }
     }
@@ -175,9 +176,6 @@ byte decode_binary(FILE* input_file, byte maze_struct[][256], bit_pair* maze_siz
     maze_size->x /= 2;
 
     return 0;   // valid maze
-
-    // the 3. and 4. sections are ommitted during maze encoding
-    // they can exist, but here we just don't care
 }
 
 void read_bits(byte bitter) {

@@ -1,10 +1,5 @@
-Do dokumentacji dopisać:
-1. jak powinien wyglądać labirynt wejściowy, tzn. ścianki grubości 1, limity wielkościowe, PRZYNAJMNIEJ JEDNA ŚCIANKA NA CAŁY RZĄD/KOLUMNE
-OK 2. dodać jakieś rysunki/zarys pomysłu wyrysowany na kartce, by podbić serca prowadzących, że nad projektem myśli się wszędzie i zawsze ( ͡ಥ ͜ʖ ͡ಥ)
-3. jakiś żart słowny
-
 Co zostało do zrobienia:
--dokumentacja do poprawy
+-dokumentacja do poprawy: opis każdego z modułów
 -zapis drogi do .txt
 -zapis laba&drogi do binarki
 -bfs
