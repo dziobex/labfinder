@@ -8,8 +8,8 @@
 #include "exit_codes.h"
 
 void help(char* file) {
-    printf("POTRZEBUJESZ POMOCY? ZADZWON: +48 800 70 2222\n");
-    printf("Uzycie: %s -i <plik_wejsciowy> -o <plik_wyjsciowy> -c <kod_wejsciowy> -d <kod_wyjsciowy>\n", file);
+    printf("POTRZEBUJESZ POMOCY? ZADZWON: +48 800 70 2222\n\n");
+    printf("UZYCIE PROGRAMU:\n\t%s -i <plik_wejsciowy> -o <plik_wyjsciowy> -c <kod_wejsciowy> -d <kod_wyjsciowy>\n", file);
 }
 
 int main(int argc, char **argv)
@@ -44,26 +44,33 @@ int main(int argc, char **argv)
 
     if ( in_file == NULL || in_code == NULL )
         return help(argv[0]), EXIT_FAILURE;
-    
-    if ( strcmp(in_code, "t") != 0 && strcmp(in_code, "b") != 0 )
+
+    bit_pair maze_size;                         // size of the given maze
+    maze_cord in_cord, out_cord;                // cords of the in/out points
+    byte get_code = 1;                          // result of the file encoding
+
+    FILE *in;                                   // file
+
+    if ( strcmp(in_code, "t") == 0 ) {          // text coding
+        in = fopen(in_file, "r");
+        if (in == NULL)
+            return fprintf(stderr, "Nie udalo sie otworzyc pliku wejsciowego :(\n"), EXIT_FAILURE;
+        get_code = decode_txt(in, maze_struct, &maze_size, &in_cord, &out_cord);
+
+    } else if ( strcmp(in_code, "b") == 0 ) {   // binary coding
+        in = fopen(in_file, "rb");
+        if (in == NULL)
+            return fprintf(stderr, "Nie udalo sie otworzyc pliku wejsciowego :(\n"), EXIT_FAILURE;
+
+            printf("AAAA");
+        get_code = decode_binary(in, maze_struct, &maze_size, &in_cord, &out_cord);
+    } else
         return fprintf(stderr, "Nieprawidlowy typ kodowania pliku wsadowego!\nSprobuj tych: tekstowy (t), binarny (b)\n"), EXIT_FAILURE;
+    
     if ( strcmp(out_code, "t") != 0 && strcmp(out_code, "b") != 0 )
         return fprintf(stderr, "Nieprawidlowy typ kodowania pliku wyjsciowego!\nSprobuj tych: tekstowy (t), binarny (b)\n"), EXIT_FAILURE;
 
-    bit_pair maze_size;             // size of the given maze
-    maze_cord in_cord, out_cord;    // cords of the in/out points
-
-    FILE *in = fopen(in_file, "r");
-    if (in == NULL)
-        return fprintf(stderr, "Nie udalo sie otworzyc pliku wejsciowego :(\n"), EXIT_FAILURE;
-
-    byte get_code = decode_txt(in, maze_struct, &maze_size, &in_cord, &out_cord);
-
     fclose(in);
-    free(in_file);
-    free(out_file);
-    free(in_code);
-    free(out_code);
 
     switch (get_code) {
         default:
@@ -83,6 +90,8 @@ int main(int argc, char **argv)
             printf("Brakuje punktu wejscia/wyjscia.\n");
             return EXIT_FAILURE;
     }
+    
+    free(in_file); free(out_file); free(in_code); free(out_code);
 
     return EXIT_SUCCESS;
 }

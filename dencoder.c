@@ -64,7 +64,7 @@ byte decode_txt(FILE* input_file, byte maze_struct[][256],
     maze_size->x /= 2;
     maze_size->y = y / 2;
 
-    printf("%d %d ", maze_size->x, maze_size->y);
+    // printf("%d %d ", maze_size->x, maze_size->y);
 
     if ( maze_size->y == 0 || maze_size->x == 0)
         return EMPTY_MAZE;
@@ -76,7 +76,6 @@ byte decode_txt(FILE* input_file, byte maze_struct[][256],
 
 
 byte decode_binary(FILE* input_file, byte maze_struct[][256], bit_pair* maze_size, maze_cord* in_cord, maze_cord* out_cord) {
-
     // 1. handling the HEADER section
 
     binary_data bd; // a container for (useless) data
@@ -88,13 +87,13 @@ byte decode_binary(FILE* input_file, byte maze_struct[][256], bit_pair* maze_siz
     binary_pair dims, entry, exit;
 
     // problems with getting maze dims
-    if ( fread(&dims.x, sizeof(uint16_t), 1, input_file) != 1 || fread(&dims.y, sizeof(uint16_t), 1, input_file) != 1 )
+    if ( fread(&dims.y, sizeof(uint16_t), 1, input_file) != 1 || fread(&dims.x, sizeof(uint16_t), 1, input_file) != 1 )
         return INVALID_STRUCTURE;
     maze_size->y = dims.y;
     maze_size->x = dims.x;
 
     // check the values of the dims
-    if ( dims.x < 1 || dims.x > 1024  || dims.y < 1 || dims.y > 1024 )
+    if ( dims.x < 1 || dims.x > 2049  || dims.y < 1 || dims.y > 2049 )
         return INVALID_DIMS;
 
     // problems with getting the gates cords (entry)
@@ -112,7 +111,7 @@ byte decode_binary(FILE* input_file, byte maze_struct[][256], bit_pair* maze_siz
         return INVALID_STRUCTURE;
 
     // check the values of the exit cords
-    if ( --exit.x < 0 || exit.x > 1023 || --exit.y < 0 || exit.y > 1023 )
+    if ( --exit.x < 0 || exit.x > 2048 || --exit.y < 0 || exit.y > 2048 )
         return INVALID_GATE;
     out_cord->x = entry.x;
     out_cord->y = entry.y;
@@ -141,10 +140,8 @@ byte decode_binary(FILE* input_file, byte maze_struct[][256], bit_pair* maze_siz
         if ( fread(&sep, sizeof(uint8_t), 1, input_file) != 1 || fread(&val, sizeof(uint8_t), 1, input_file) != 1 || fread(&count, sizeof(uint8_t), 1, input_file) != 1 )
             return LINES_NOT_EQUAL;
 
-        if ( sep != separator || ( wall != val && path != val ) ) {
-            printf("%d=%d, %c, %c ", sep, separator, wall, val);
+        if ( sep != separator || ( wall != val && path != val ) )
             return INVALID_CHARACTERS;
-        }
 
         // here will be coding the bit-maze
 
@@ -174,25 +171,13 @@ byte decode_binary(FILE* input_file, byte maze_struct[][256], bit_pair* maze_siz
         }
     }
 
+    maze_size->y /= 2;
+    maze_size->x /= 2;
+
     return 0;   // valid maze
 
     // the 3. and 4. sections are ommitted during maze encoding
     // they can exist, but here we just don't care
-
-    /*
-        when errors may occur:
-        -user is stupid
-        -dimensions are too small/big
-        -counter (coding words) is smaller than (2xCOLS+1)*(2xROWS+1)
-        -gates are out of range
-        -missing section/section's part
-        -user forgot what character it's signed for separator/wall/path XD
-        !!!user is stupid!!!
-    */
-
-   /*
-        -add to each 'fread' stuff: if case to check if the file IS NOT IN THE BERSERKER MODE HAIIIIYAYO 
-   */
 }
 
 void read_bits(byte bitter) {

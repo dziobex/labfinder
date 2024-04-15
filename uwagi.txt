@@ -4,8 +4,6 @@ OK 2. dodać jakieś rysunki/zarys pomysłu wyrysowany na kartce, by podbić ser
 3. jakiś żart słowny
 
 Co zostało do zrobienia:
--getopt, args handling
--plik makefile
 -dokumentacja do poprawy
 -zapis drogi do .txt
 -zapis laba&drogi do binarki
