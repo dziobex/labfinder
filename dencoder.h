@@ -25,17 +25,27 @@ typedef struct {
 typedef union {
     uint32_t file_id;
     uint8_t esc;
-    uint8_t reserved;   // 8*12=96
+    uint8_t reserved;       // 8 * 12 = 96
     uint32_t counter;
     uint32_t solution_offset;
 } binary_data;
 
+// get the REAL cords in the bit-matrix
 bit_pair get_bit_cords(short x);
+
+// binary representation of the given number
+void read_bits(byte bitter);
+
+// RECEIVING
 
 byte decode_txt(FILE* input_file, byte maze_struct[][256],
     bit_pair* maze_size, maze_cord* in_cord, maze_cord* out_cord);
 byte decode_binary(FILE* input_file, byte maze_struct[][256],
     bit_pair* maze_size, maze_cord* in_cord, maze_cord* out_cord);
 
-// binary representation of the given number
-void read_bits(byte bitter);
+// GIVING
+
+byte encode_txt(FILE* output_file, byte maze_flags[][128],
+    bit_pair* maze_size, maze_cord* in_cord, maze_cord* out_cord );
+byte encode_binary(FILE* output_file, byte maze_flags[][128],
+    bit_pair* maze_size, maze_cord* in_cord, maze_cord* out_cord );
