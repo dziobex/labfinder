@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <inttypes.h>
 
 #include "bits.h"
 #include "exit_codes.h"
@@ -45,7 +46,6 @@ byte decode_binary(FILE* input_file, byte maze_struct[][256],
 
 // GIVING
 
-byte encode_txt(FILE* output_file, byte maze_flags[][128],
-    bit_pair* maze_size, maze_cord* in_cord, maze_cord* out_cord );
-byte encode_binary(FILE* output_file, byte maze_flags[][128],
-    bit_pair* maze_size, maze_cord* in_cord, maze_cord* out_cord );
+byte encode_txt(FILE* output_file, FILE* steps_file );
+byte encode_binary(FILE* output_file, FILE* steps_file,
+    byte maze_struct[][256], bit_pair* maze_size, maze_cord* in_cord, maze_cord* out_cord );

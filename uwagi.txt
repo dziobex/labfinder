@@ -1,6 +1,5 @@
 Co zostało do zrobienia:
 -dokumentacja do poprawy: opis każdego z modułów
-    -zapis drogi do .txt
     -zapis laba&drogi do binarki
 -bfs
 -valgrind check

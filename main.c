@@ -97,9 +97,14 @@ int main(int argc, char **argv)
     out = fopen(out_file, (strcmp(out_code, "b") == 0) ? "wb" : "w" );
     if (out == NULL)
         return fprintf(stderr, "Nie udalo sie otworzyc pliku wejsciowego :(\n"), EXIT_FAILURE;
+
+    /*
     get_code = strcmp(out_code, "b") == 0
         ? encode_binary(out, maze_flags, &maze_size, &in_cord, &out_cord)
         : encode_txt(out, maze_flags, &maze_size, &in_cord, &out_cord);
+    */
+    get_code = 0;    // default value
+
     fclose(out);
 
     if ( get_code != 0 )

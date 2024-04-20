@@ -99,20 +99,24 @@ byte decode_binary(FILE* input_file, byte maze_struct[][256], bit_pair* maze_siz
         return INVALID_STRUCTURE;
 
     // check the values of the entry cords
-    if ( --entry.x < 0 || entry.x > 1023 || --entry.y < 0 || entry.y > 1023 )
+    if ( --entry.x < 1 || entry.x > 2049 || --entry.y < 1 || entry.y > 2049 )
         return INVALID_GATE;
-    in_cord->x = entry.x;   // more memory-effecient data type
-    in_cord->y = entry.y;
+    in_cord->x = entry.x / 2;   // more memory-effecient data type
+    if ( in_cord->x > 0 ) in_cord->x -= 1;
+    in_cord->y = entry.y / 2;
+    if ( in_cord->y > 0 ) in_cord->y -= 1;
 
     // problems with getting the gates cords (exit)
     if ( fread(&exit.x, sizeof(uint16_t), 1, input_file) != 1 || fread(&exit.y, sizeof(uint16_t), 1, input_file) != 1)
         return INVALID_STRUCTURE;
 
     // check the values of the exit cords
-    if ( --exit.x < 0 || exit.x > 2048 || --exit.y < 0 || exit.y > 2048 )
+    if ( --exit.x < 1 || exit.x > 2049 || --exit.y < 1 || exit.y > 2049 )
         return INVALID_GATE;
-    out_cord->x = entry.x;
-    out_cord->y = entry.y;
+    out_cord->x = entry.x / 2;
+    if ( out_cord->x > 0 ) out_cord->x -= 1;
+    out_cord->y = entry.y / 2;
+    if ( out_cord->y > 0 ) out_cord->y -= 1;
 
     // getting the 'reserved' stuff
     if ( fread(&bd.reserved, sizeof(uint8_t), 12, input_file) != 12 )
