@@ -17,11 +17,7 @@ int main(int argc, char **argv)
     byte maze_struct[1024 + 128][128 * 2] = {};
     byte maze_flags[1024][128] = {};
 
-    char* in_file = NULL;
-    char* out_file = NULL;
-    char* in_code = NULL;
-    char* out_code = NULL;
-
+    char *in_file = NULL, *out_file = NULL, *in_code = NULL, *out_code = NULL;
     int opt;
     while ((opt = getopt(argc, argv, ":i:o:c:d:")) != -1) {
         switch (opt) {
@@ -47,28 +43,23 @@ int main(int argc, char **argv)
 
     bit_pair maze_size;                         // size of the given maze
     maze_cord in_cord, out_cord;                // cords of the in/out points
-    byte get_code = 1;                          // result of the file encoding
+    byte get_code = 1;                          // result of the file de/en coding
 
     FILE *in;                                   // file
-
-    if ( strcmp(in_code, "t") == 0 ) {          // text coding
-        in = fopen(in_file, "r");
+    
+    if ( strcmp(in_code, "t") == 0 || strcmp(in_code, "b") == 0 ) {          // text coding
+        in = fopen(in_file, (strcmp(in_code, "b") == 0) ? "rb" : "r" );
         if (in == NULL)
             return fprintf(stderr, "Nie udalo sie otworzyc pliku wejsciowego :(\n"), EXIT_FAILURE;
-        get_code = decode_txt(in, maze_struct, &maze_size, &in_cord, &out_cord);
-
-    } else if ( strcmp(in_code, "b") == 0 ) {   // binary coding
-        in = fopen(in_file, "rb");
-        if (in == NULL)
-            return fprintf(stderr, "Nie udalo sie otworzyc pliku wejsciowego :(\n"), EXIT_FAILURE;
-        get_code = decode_binary(in, maze_struct, &maze_size, &in_cord, &out_cord);
+        get_code = strcmp(in_code, "b") == 0
+            ? decode_binary(in, maze_struct, &maze_size, &in_cord, &out_cord)
+            : decode_txt(in, maze_struct, &maze_size, &in_cord, &out_cord);
+        fclose(in);
     } else
         return fprintf(stderr, "Nieprawidlowy typ kodowania pliku wsadowego!\nSprobuj tych: tekstowy (t), binarny (b)\n"), EXIT_FAILURE;
-    
+
     if ( strcmp(out_code, "t") != 0 && strcmp(out_code, "b") != 0 )
         return fprintf(stderr, "Nieprawidlowy typ kodowania pliku wyjsciowego!\nSprobuj tych: tekstowy (t), binarny (b)\n"), EXIT_FAILURE;
-
-    fclose(in);
 
     switch (get_code) {
         default:
@@ -98,7 +89,28 @@ int main(int argc, char **argv)
             printf("Uzyto nieprawidlowych znakow do kodowania labiryntu.\n");
             return EXIT_FAILURE;
     }
-    
+
+    // saving
+
+    FILE *out;
+
+    out = fopen(out_file, (strcmp(out_code, "b") == 0) ? "wb" : "w" );
+    if (out == NULL)
+        return fprintf(stderr, "Nie udalo sie otworzyc pliku wejsciowego :(\n"), EXIT_FAILURE;
+
+    /*
+    get_code = strcmp(out_code, "b") == 0
+        ? encode_binary(out, maze_flags, &maze_size, &in_cord, &out_cord)
+        : encode_txt(out, maze_flags, &maze_size, &in_cord, &out_cord);
+    */
+    get_code = 0;    // default value
+
+    fclose(out);
+
+    if ( get_code != 0 )
+        return fprintf(stderr, "Cos poszlo nie tak z zapisem sciezki :(\n"), EXIT_FAILURE;
+    printf("Sciezka zapisana do pliku %s :)\n", out_file);
+
     free(in_file); free(out_file); free(in_code); free(out_code);
 
     return EXIT_SUCCESS;
