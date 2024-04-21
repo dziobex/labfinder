@@ -15,14 +15,14 @@ byte valid_coords(maze_cord checked_pos, bit_pair maze_size);
 byte construct_info_byte(byte maze_build[][256], byte maze_nodes[][128], maze_cord maze_pos, bit_pair maze_size);
 //Creates a byte containing the info of if the 4 directions can be accessed, as well as if they've already been checked
 
-void enqueue(FILE* queue, maze_cord maze_pos, byte info_byte, long long queue_bin_pos);
+void enqueue(FILE* queue, maze_cord maze_pos, byte info_byte, long long queue_bin_pos, char* buffer);
 //Adds every direction that has not yet been checked to the queue. This has to append to the file..?
 
-maze_cord dequeue(FILE* queue, long long queue_bin_pos, char* buffer[]);
+maze_cord dequeue(FILE* queue, long long* queue_parent_pos, long long queue_bin_pos, char* buffer[]);
 //Gets the position from position 'queuepos' in the queue.
 
-FILE* reconstruct_path(FILE* queue, maze_cord cur_pos, long long queue_bin_pos);
-//Rebuilds the path taken by adding it to a file.
+FILE* reconstruct_path(FILE* queue, maze_cord in_cord, maze_cord out_cord, long long queue_bin_pos, char* buffer);
+//Rebuilds the path taken and puts it into a file.
 
 FILE* bfs_runner(byte maze_build[][256], byte maze_nodes[][128], bit_pair maze_size, maze_cord in_cord, maze_cord out_cord);
 // Rolls a breadth-first search. Returns a FILE with the correct steps to solve it, in order.
