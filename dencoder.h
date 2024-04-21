@@ -1,8 +1,10 @@
+#pragma once
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "bits.h"
+#include "bitish.h"
 #include "exit_codes.h"
 
 typedef struct {

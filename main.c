@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "dencoder.h"
 #include "bits.h"
+#include "dencoder.h"
+#include "mazerunner.h"
 #include "exit_codes.h"
 
 int main( int argc, char** argv ) {
@@ -16,7 +17,7 @@ int main( int argc, char** argv ) {
     bit_pair maze_size;
     maze_cord in_cord, out_cord;                      // punkty wejścia/wyjścia
 
-    FILE* in = fopen("samples/gruby.txt", "r");
+    FILE* in = fopen("samples/00.txt", "r");
 
     byte get_code = decode_txt(in, maze_struct, &maze_size, &in_cord, &out_cord);
     
@@ -45,6 +46,9 @@ int main( int argc, char** argv ) {
             return EXIT_FAILURE;
         }
     }
+
+    FILE* res = bfs_runner(maze_struct, maze_flags, maze_size, in_cord, out_cord);
+    printf("");
 
     return EXIT_SUCCESS;
 }
