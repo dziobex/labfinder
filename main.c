@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "bits.h"
+#include "bitish.h"
 #include "dencoder.h"
 #include "mazerunner.h"
 #include "exit_codes.h"

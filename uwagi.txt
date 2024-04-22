@@ -1,8 +1,0 @@
-Co zostało do zrobienia:
--dokumentacja do poprawy: opis każdego z modułów
-    -zapis laba&drogi do binarki
--poprawa wczytywania kierunku wejścia/wyjścia
--valgrind check
--readme
-
-W docs/ są pliki z opisem metody kompresji labiryntu i analizy jednego z samplesów

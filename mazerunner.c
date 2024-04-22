@@ -26,7 +26,7 @@ byte unfound(maze_cord cur, maze_cord want) {
     if (cur.x == want.x - 1 && cur.y == want.y) return 0;
     else if (cur.x == want.x && cur.y == want.y - 1) return 0;
     //Wygląda na to, że labirynty \ i - mają pierwszy przypadek, a labirynty | drugi.
-    //Why fix it when you can make a workaround? lol
+    //Why fix it when you can make a workaround? lol TRUE
     return 1;
 } //make this a ternary perhaps
 
@@ -356,3 +356,5 @@ FILE* bfs_runner(byte maze_build[][256], byte maze_nodes[][128], bit_pair maze_s
 
     return out;
 }
+
+// huge job, thanks!!! 草莓 again for you

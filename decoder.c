@@ -9,7 +9,7 @@ byte decode_txt(FILE* input_file, byte maze_struct[][256],
     in_cord->x = in_cord->y = 1111;
     out_cord->x = out_cord->y = 1111;
 
-    char c;
+    char c, in_dir = 0, out_dir = 0;
     short x = 0, y = 0;
     while ((c=getc(input_file)) != EOF) {
         if ( c != 'X' && c != ' ' && c != 'P' && c != 'K' && c != '\n' && c != 10 )
@@ -45,12 +45,29 @@ byte decode_txt(FILE* input_file, byte maze_struct[][256],
         if ( c == 'P' ) {
             if ( in_cord->x != 1111 )
                 return MULTI_ENTRANCE;
+            if ( y == 0 )
+                in_dir = 0;         // G00ra
+            else if ( x == 0 )      
+                in_dir = 3;         // L33wa
+            else if ( x >= maze_size->x - 1 )
+                in_dir = 1;         // Pr@@wa
+            else
+                in_dir = 2;         //D00ł
+
             in_cord->y = y / 2;
             in_cord->x = x / 2;
         }
         if ( c == 'K' ) {
             if ( out_cord->x != 1111 )
                 return MULTI_ENTRANCE;
+            if ( y == 0 )
+                out_dir = 2;         // G00ra
+            else if ( x == 0 )      
+                out_dir = 1;         // L33wa
+            else if ( x >= maze_size->x - 1 )
+                out_dir = 3;         // Pr@@wa
+            else
+                out_dir = 0;         //D00ł
             out_cord->y = y / 2;
             out_cord->x = x / 2;
         }
@@ -69,23 +86,8 @@ byte decode_txt(FILE* input_file, byte maze_struct[][256],
     if ( in_cord->x == 1111 || out_cord->x == 1111 )
         return NO_ENTRANCE;
 
-    if ( in_cord->y == 0 )
-        in_cord->dir = 0;
-    else if ( in_cord->y >= maze_size->y - 1 )
-        in_cord->dir = 2;
-    else if ( in_cord->x == 0 )
-        in_cord->dir = 3;
-    else
-        in_cord->dir = 1;
-    
-    if ( out_cord->y == 0 )
-        out_cord->dir = 2;
-    else if ( out_cord->y >= maze_size->y - 1 )
-        out_cord->dir = 0;
-    else if ( out_cord->x == 0 )
-        out_cord->dir = 1;
-    else
-        out_cord->dir = 3;
+    in_cord->dir = in_dir;
+    out_cord->dir = out_dir;
 
     return 0;
 }
