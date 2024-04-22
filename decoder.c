@@ -94,12 +94,12 @@ byte decode_txt(FILE* input_file, byte maze_struct[][256],
 
 
 byte decode_binary(FILE* input_file, byte maze_struct[][256], bit_pair* maze_size, maze_cord* in_cord, maze_cord* out_cord) {
-    /* 1. handling the HEADER section */
+    // 1. handling the HEADER section 
 
     binary_data bd; // a container for (useless) data, which won't be used further
 
     // problems with getting the file ID (structure thing)
-    if ( fread(&bd.file_id, sizeof(uint16_t), 1, input_file) != 1 || bd.file_id != 0x52524243 || fread(&bd.esc, 1, 1, input_file) != 1 || bd.esc != 0x1B )
+    if ( fread(&bd.file_id, sizeof(uint16_t), 2, input_file) != 2 || fread(&bd.esc, 1, 1, input_file) != 1)
         return INVALID_STRUCTURE;
 
     binary_pair dims, entry, exit;
@@ -119,23 +119,24 @@ byte decode_binary(FILE* input_file, byte maze_struct[][256], bit_pair* maze_siz
         return INVALID_STRUCTURE;
 
     // check the values of the entry cords
-    if ( --entry.x < 1 || entry.x > 2049 || --entry.y < 1 || entry.y > 2049 )
+    if ( entry.x < 0 || entry.x > 2048 || --entry.y < 0 || entry.y > 2048 )
         return INVALID_GATE;
     in_cord->x = entry.x / 2;   // more memory-effecient data type
     if ( in_cord->x > 0 ) in_cord->x -= 1;
     in_cord->y = entry.y / 2;
     if ( in_cord->y > 0 ) in_cord->y -= 1;
 
+
     // problems with getting the gates cords (exit)
     if ( fread(&exit.x, sizeof(uint16_t), 1, input_file) != 1 || fread(&exit.y, sizeof(uint16_t), 1, input_file) != 1)
         return INVALID_STRUCTURE;
 
     // check the values of the exit cords
-    if ( --exit.x < 1 || exit.x > 2049 || --exit.y < 1 || exit.y > 2049 )
+    if ( exit.x < 0 || exit.x > 2048 || exit.y < 0 || exit.y > 2048 )
         return INVALID_GATE;
-    out_cord->x = entry.x / 2;
+    out_cord->x = exit.x / 2;
     if ( out_cord->x > 0 ) out_cord->x -= 1;
-    out_cord->y = entry.y / 2;
+    out_cord->y = exit.y / 2;
     if ( out_cord->y > 0 ) out_cord->y -= 1;
 
     // getting the 'reserved' stuff
@@ -152,7 +153,7 @@ byte decode_binary(FILE* input_file, byte maze_struct[][256], bit_pair* maze_siz
     if ( fread(&separator, sizeof(uint8_t), 1, input_file) != 1 || fread(&wall, sizeof(uint8_t), 1, input_file) != 1 || fread(&path, sizeof(uint8_t), 1, input_file) != 1 )
         return INVALID_STRUCTURE;
 
-    /* 2. handling the CODING section */
+    // 2. handling the CODING section 
 
     uint8_t sep, val, count;
     bit_pair tracked_dims;
@@ -172,7 +173,9 @@ byte decode_binary(FILE* input_file, byte maze_struct[][256], bit_pair* maze_siz
                 tracked_dims.y++;
                 tracked_dims.x = 0;
             }
+
             if (tracked_dims.x != 0 && tracked_dims.y != 0 ) {
+
                 short cell_y = (tracked_dims.y / 2) - 1;
                 short cell_x = (tracked_dims.x / 2) - 1;
                 bit_pair _x = get_bit_cords(cell_x * 2);
@@ -184,6 +187,7 @@ byte decode_binary(FILE* input_file, byte maze_struct[][256], bit_pair* maze_siz
                 else if (tracked_dims.x % 2 == 0 && tracked_dims.y % 2 != 0) {     // WALLS info (for columns ||)
                     cell_y++;
                     SETBIT(maze_struct[(int)cell_y][(int)_x.y], 7 - _x.x - 1, val == wall ? 1 : 0);
+
                 }
             }
             ++tracked_dims.x;

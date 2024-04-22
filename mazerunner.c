@@ -311,8 +311,8 @@ FILE* reconstruct_path(FILE* queue, maze_cord in_cord, maze_cord out_cord, long 
         fwrite(buffer, 1, (size_t)strlen(buffer), actual_out);
     }
 
-    fclose(inverted_out);
-    fclose(unconverted_out);
+    //fclose(inverted_out);
+    //fclose(unconverted_out);
 
     rewind(actual_out);
     return actual_out;
@@ -323,17 +323,22 @@ FILE* reconstruct_path(FILE* queue, maze_cord in_cord, maze_cord out_cord, long 
 FILE* bfs_runner(byte maze_build[][256], byte maze_nodes[][128], bit_pair maze_size, maze_cord in_cord, maze_cord out_cord) {
     char queue_buffer[176]; //Buffer for a single line in my queue (including padding for '\n' and '\0')
     long long queue_bin_pos, queue_parent_pos = -1; //Long long because of how large the queue file could get.
-    FILE* queue = tmpfile(); //tmpfile(); //Opens in read + write mode. The queue for my BFS.
+    FILE* queue = fopen("queue.txt", "wb+"); //tmpfile(); //Opens in read + write mode. The queue for my BFS.
 
+    byte gave_up = 0;
     byte info_byte = 0x00;
     maze_cord running_cord = in_cord;
 
-    /*for (int i = 0; i < maze_size.y; ++i) {
+    // printf("%d\n", maze_size.x);
+
+    /*
+    for (int i = 0; i < maze_size.y; ++i) {
         for (int j = 0; j <= maze_size.x / 4; ++j) {
             read_bits(maze_build[i][j]);
         }
         printf("\n");
-    }*/
+    }
+    */
     
     //fprintf(queue, "%d %d %d:%ld\n", in_cord.x, in_cord.y, in_cord.dir, queue_bin_pos);
     while(unfound(running_cord, out_cord)) {
@@ -341,18 +346,22 @@ FILE* bfs_runner(byte maze_build[][256], byte maze_nodes[][128], bit_pair maze_s
         queue_bin_pos = ftell(queue); //Remember where we are in our queue,
         fseek(queue, 0, SEEK_END); //(NOT PORTABLE! Should? be fine) Go to the end of the queue,
         enqueue(queue, maze_nodes, running_cord, info_byte, queue_parent_pos, queue_buffer); //Enqueue based on the byte (this could be one step with info_byte, but...),
+
         if(ftell(queue) == queue_bin_pos) {
+            gave_up = 1;
             printf("Giving up! No path seems to exist\n");
             break;
         }
+
         running_cord = dequeue(queue, &queue_parent_pos, queue_bin_pos, queue_buffer); //Load current queue pos into memory,
         //And keep going.
 
         //I'll reconstruct afterwards thanks to queue_parent_pos!
     }
 
-    FILE* out;
-    out = reconstruct_path(queue, in_cord, out_cord, queue_bin_pos, queue_buffer); //The output file - a list of steps needed
+    FILE* out = tmpfile();
+    if (!gave_up)
+        out = reconstruct_path(queue, in_cord, out_cord, queue_bin_pos, queue_buffer); //The output file - a list of steps needed
 
     return out;
 }

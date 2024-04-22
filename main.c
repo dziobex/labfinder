@@ -43,7 +43,10 @@ int main(int argc, char **argv)
         return help(argv[0]), EXIT_FAILURE;
 
     bit_pair maze_size;                         // size of the given maze
+    maze_size.x = maze_size.y = 0;
     maze_cord in_cord, out_cord;                // cords of the in/out points
+    in_cord.x = in_cord.y = 1111;
+    out_cord.x = out_cord.y = 1111;
     byte get_code = 1;                          // result of the file de/en coding
 
     FILE *in;                                   // file
@@ -112,8 +115,6 @@ int main(int argc, char **argv)
     if ( get_code != 0 )
         return fprintf(stderr, "Cos poszlo nie tak z zapisem sciezki :(\n"), EXIT_FAILURE;
     printf("Sciezka zapisana do pliku %s :)\n", out_file);
-
-    free(in_file); free(out_file); free(in_code); free(out_code);
 
     return EXIT_SUCCESS;
 }

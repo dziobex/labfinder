@@ -30,7 +30,7 @@ byte encode_binary(FILE* output_file, FILE* steps_file,
     // 06. counter
     FILE *tmp = tmpfile();
     uint32_t elements = 0;
-    byte sign, steps = 0;
+    byte sign = 0, steps = 0;
         // first - the upper frame
     for( short i = 0; i < maze_size->x * 2 + 1; ++i) {
         if ( steps == 255 ) {   // max for byte
@@ -51,7 +51,7 @@ byte encode_binary(FILE* output_file, FILE* steps_file,
         // looking at the 2rd bits of each cell (------ walls)
         for ( short x = 0; x < maze_size->x - 1; ++x ) {
             bit_pair bp = get_bit_cords(x * 2 + 1);
-            if ( GETBIT((int)maze_struct[bp.y], (int)bp.x) == 1 ) {
+            if ( GETBIT((byte)maze_struct[bp.y], (int)bp.x) == 1 ) {
                 fprintf(tmp, " %i\n", steps);
                 fprintf(tmp, "X 0\n");
                 elements += 2;
@@ -70,7 +70,7 @@ byte encode_binary(FILE* output_file, FILE* steps_file,
         // looking at the 1st bits of each cell (||||||||| walls)
         for ( short x = 0; x < maze_size->x; ++x ) {
             bit_pair bp = get_bit_cords(x * 2);
-            byte new_sign = GETBIT((int)maze_struct[bp.y], (int)bp.x);
+            byte new_sign = GETBIT((byte)maze_struct[bp.y], (int)bp.x);
 
             if ( new_sign == sign ) {
                 ++steps;
@@ -119,7 +119,7 @@ byte encode_binary(FILE* output_file, FILE* steps_file,
     fprintf(output_file, "%" PRIu8, (uint8_t)' ');
     // maze encoding
     rewind(tmp);
-    char c, buffer[20];
+    char c = 0, buffer[20] = {};
     while (fgets(buffer, sizeof(buffer), tmp))
         if (sscanf(buffer, "%c %c", &c, &steps) == 2)
             fprintf(output_file, "#%c%c", &c, &steps);
@@ -136,7 +136,7 @@ byte encode_binary(FILE* output_file, FILE* steps_file,
     fprintf(output_file, "%" PRIu32, steps_c);
     // solution steps
     char dir = in_cord->dir;
-    char buff[10];
+    char buff[10] = {};
     uint32_t dir_steps = 0;
     rewind(steps_file);
     while (fgets(buffer, sizeof(buffer), steps_file)) {
@@ -156,5 +156,6 @@ byte encode_binary(FILE* output_file, FILE* steps_file,
             }
         }
     }
+
     return 0;
 }
