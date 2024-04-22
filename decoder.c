@@ -22,7 +22,7 @@ byte decode_txt(FILE* input_file, byte maze_struct[][256],
             if (x != 0 && maze_size->x == 0)
                 maze_size->x = x;
             else if (maze_size->x != x)
-                return LINES_NOT_EQUAL;             // rows aren't equal, this maze is mazzed up 😭
+                return LINES_NOT_EQUAL;             // rows aren't equal, this maze is mazzed up bruh 😭
             x = 0;
             continue;
         }
@@ -68,6 +68,24 @@ byte decode_txt(FILE* input_file, byte maze_struct[][256],
         return EMPTY_MAZE;
     if ( in_cord->x == 1111 || out_cord->x == 1111 )
         return NO_ENTRANCE;
+
+    if ( in_cord->y == 0 )
+        in_cord->dir = 0;
+    else if ( in_cord->y >= maze_size->y - 1 )
+        in_cord->dir = 2;
+    else if ( in_cord->x == 0 )
+        in_cord->dir = 3;
+    else
+        in_cord->dir = 1;
+    
+    if ( out_cord->y == 0 )
+        out_cord->dir = 2;
+    else if ( out_cord->y >= maze_size->y - 1 )
+        out_cord->dir = 0;
+    else if ( out_cord->x == 0 )
+        out_cord->dir = 1;
+    else
+        out_cord->dir = 3;
 
     return 0;
 }
@@ -172,6 +190,24 @@ byte decode_binary(FILE* input_file, byte maze_struct[][256], bit_pair* maze_siz
 
     maze_size->y /= 2;
     maze_size->x /= 2;
+
+    if ( in_cord->y == 0 )
+        in_cord->dir = 0;
+    else if ( in_cord->y >= maze_size->y - 1 )
+        in_cord->dir = 2;
+    else if ( in_cord->x == 0 )
+        in_cord->dir = 3;
+    else
+        in_cord->dir = 1;
+    
+    if ( out_cord->y == 0 )
+        out_cord->dir = 2;
+    else if ( out_cord->y >= maze_size->y - 1 )
+        out_cord->dir = 0;
+    else if ( out_cord->x == 0 )
+        out_cord->dir = 1;
+    else
+        out_cord->dir = 3;
 
     return 0;   // valid maze
 }

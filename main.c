@@ -3,8 +3,9 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "dencoder.h"
 #include "bits.h"
+#include "dencoder.h"
+#include "mazerunner.h"
 #include "exit_codes.h"
 
 void help(char* file) {
@@ -14,7 +15,7 @@ void help(char* file) {
 
 int main(int argc, char **argv)
 {
-    byte maze_struct[1024 + 128][128 * 2] = {};
+    byte maze_struct[1024][128 * 2] = {};
     byte maze_flags[1024][128] = {};
 
     char *in_file = NULL, *out_file = NULL, *in_code = NULL, *out_code = NULL;
@@ -93,16 +94,17 @@ int main(int argc, char **argv)
     // saving
 
     FILE *out;
+    FILE *bfs_out = bfs_runner(maze_struct, maze_flags, maze_size, in_cord, out_cord);
 
     out = fopen(out_file, (strcmp(out_code, "b") == 0) ? "wb" : "w" );
     if (out == NULL)
         return fprintf(stderr, "Nie udalo sie otworzyc pliku wejsciowego :(\n"), EXIT_FAILURE;
 
-    /*
+    
     get_code = strcmp(out_code, "b") == 0
-        ? encode_binary(out, maze_flags, &maze_size, &in_cord, &out_cord)
-        : encode_txt(out, maze_flags, &maze_size, &in_cord, &out_cord);
-    */
+        ? encode_binary(out, bfs_out, maze_struct, &maze_size, &in_cord, &out_cord)
+        : encode_txt(out, bfs_out);
+    
     get_code = 0;    // default value
 
     fclose(out);

@@ -1,7 +1,7 @@
 Co zostało do zrobienia:
 -dokumentacja do poprawy: opis każdego z modułów
     -zapis laba&drogi do binarki
--bfs
+-poprawa wczytywania kierunku wejścia/wyjścia
 -valgrind check
 -readme
 
