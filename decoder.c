@@ -99,7 +99,7 @@ byte decode_binary(FILE* input_file, byte maze_struct[][256], bit_pair* maze_siz
     binary_data bd; // a container for (useless) data, which won't be used further
 
     // problems with getting the file ID (structure thing)
-    if ( fread(&bd.file_id, sizeof(uint16_t), 2, input_file) != 2 || fread(&bd.esc, 1, 1, input_file) != 1)
+    if ( fread(&bd.file_id, sizeof(uint32_t), 1, input_file) != 1 || fread(&bd.esc, 1, 1, input_file) != 1)
         return INVALID_STRUCTURE;
 
     binary_pair dims, entry, exit;
@@ -164,8 +164,10 @@ byte decode_binary(FILE* input_file, byte maze_struct[][256], bit_pair* maze_siz
             || fread(&val, sizeof(uint8_t), 1, input_file) != 1
             || fread(&count, sizeof(uint8_t), 1, input_file) != 1 )
             return LINES_NOT_EQUAL;
-        if ( sep != separator || ( wall != val && path != val ) )
+        if ( sep != separator || ( wall != val && path != val ) ) {
+            printf("%d %d %d --- %d %d %d \n", sep, val, count, separator, wall, path);
             return INVALID_CHARACTERS;
+        }
 
         // putting info about walls into our bitmatrix
         for ( short i = 0; i <= count; ++i ) {
