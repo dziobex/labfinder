@@ -323,7 +323,7 @@ FILE* reconstruct_path(FILE* queue, maze_cord in_cord, maze_cord out_cord, long 
 FILE* bfs_runner(byte maze_build[][256], byte maze_nodes[][128], bit_pair maze_size, maze_cord in_cord, maze_cord out_cord) {
     char queue_buffer[176]; //Buffer for a single line in my queue (including padding for '\n' and '\0')
     long long queue_bin_pos, queue_parent_pos = -1; //Long long because of how large the queue file could get.
-    FILE* queue = fopen("queue.txt", "wb+"); //tmpfile(); //Opens in read + write mode. The queue for my BFS.
+    FILE* queue = tmpfile(); // fopen("queue.txt", "wb+"); //tmpfile(); //Opens in read + write mode. The queue for my BFS.
 
     byte gave_up = 0;
     byte info_byte = 0x00;
