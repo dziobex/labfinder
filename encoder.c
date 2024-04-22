@@ -2,8 +2,10 @@
 
 // modules for file encoding
 
-byte encode_txt( FILE* output_file, FILE* steps_file )
-{
+// plain text file
+// uses given tmp-file: from which we are copying the steps
+
+byte encode_txt( FILE* output_file, FILE* steps_file ) {
     fprintf(output_file, "START\n");
     char c;
     while ( (c = fgetc(steps_file)) != EOF )
@@ -43,88 +45,80 @@ byte encode_binary(FILE* output_file, FILE* steps_file,
     uint32_t reserved = 0;
     fwrite(&reserved, sizeof(uint32_t), 3, output_file);
 
-    // 06. counter
+    // 06. COUNTER
     FILE *tmp = tmpfile();
     uint32_t elements = 0;
-    byte sign = 0, steps = 0;
+    byte steps = 0;
     
     uint8_t separator = '#';
     uint8_t wall = 'X';
     uint8_t path = ' ';
 
     // the upper frame
-    for( short i = 0; i < maze_size->x * 2 + 1; ++i) {
-        if ( steps == 255 ) {   // max for byte
-            ++i;                // steps-numeration from 0
-            fwrite(&sign, sizeof(byte), 1, tmp);
-            fwrite(&steps, sizeof(byte), 1, tmp);
-            steps = 0;
-            ++elements;
-        } else
-            ++steps;
-    }
-    if ( steps > 0 ) {
-        fwrite(&sign, sizeof(byte), 1, tmp);
+    for( short i = 0; i < maze_size->x * 2 + 2; ++i) {
+        fwrite(&separator, sizeof(byte), 1, tmp);
+        fwrite(&wall, sizeof(byte), 1, tmp);
         fwrite(&steps, sizeof(byte), 1, tmp);
-        ++elements;
+        elements++;
     }
 
     // maze INSIDE analysis
-    steps = 0;
     for( short y = 0; y < maze_size->y; ++y) {
-        // looking at the 2nd bits of each cell (------ walls)
-        for ( short x = 0; x < maze_size->x - 1; ++x ) {
+        // looking at the 2nd bits of each cell ( |||||| columns )
+
+        for ( short x = 0; x < maze_size->x; ++x ) {
+
             bit_pair bp = get_bit_cords(x * 2 + 1);
-            if (GETBIT((byte)maze_struct[bp.y], (int)bp.x) == 1) {
-                fwrite(&sign, sizeof(byte), 1, tmp);
-                fwrite(&steps, sizeof(byte), 1, tmp);
-                steps = 0;
+
+            fwrite(&separator, sizeof(byte), 1, tmp);
+            fwrite(&path, sizeof(byte), 1, tmp);
+            fwrite(&steps, sizeof(byte), 1, tmp);
+            ++elements;
+
+            if (GETBIT((int)maze_struct[y][bp.y], (int)bp.x) == 1) {
+                fwrite(&separator, sizeof(byte), 1, tmp);
+                fwrite(&wall, sizeof(byte), 1, tmp);
+                fwrite(&steps, sizeof(byte), 1, tmp);                
                 ++elements;
-            } else
-                ++steps;
-            
-            if ( steps == 255 ) {
-                fwrite(&sign, sizeof(byte), 1, tmp);
+            } else {
+                fwrite(&separator, sizeof(byte), 1, tmp);
+                fwrite(&path, sizeof(byte), 1, tmp);
                 fwrite(&steps, sizeof(byte), 1, tmp);
                 ++elements;
-                steps = 0;
             }
         }
-        sign = 0;
-        steps = 1;
-        fwrite(&sign, sizeof(byte), 1, tmp);
+
+        fwrite(&separator, sizeof(byte), 1, tmp);
+        fwrite(&wall, sizeof(byte), 1, tmp);
         fwrite(&steps, sizeof(byte), 1, tmp);
         ++elements;
-
-        // looking at the 1st bits of each cell (||||||||| walls)
+        
+        // looking at the 1st bits of each cell ( ------ walls )
         for ( short x = 0; x < maze_size->x; ++x ) {
             bit_pair bp = get_bit_cords(x * 2);
-            byte new_sign = GETBIT((byte)maze_struct[bp.y], (int)bp.x);
 
-            if ( new_sign == sign ) {
-                ++steps;
-                if ( steps == 255 ) {
-                    fwrite(&sign, sizeof(byte), 1, tmp);
-                    fwrite(&steps, sizeof(byte), 1, tmp);
-                    ++elements;
-                    steps = 0;
-                }
+            // UNDER THE SAVED CELL
+            if ( GETBIT((int)maze_struct[y][bp.y], (int)bp.x) == 1 ) {
+                fwrite(&separator, sizeof(byte), 1, tmp);
+                fwrite(&wall, sizeof(byte), 1, tmp);
+                fwrite(&steps, sizeof(byte), 1, tmp);                
+                ++elements;
             } else {
-                fwrite(&sign, sizeof(byte), 1, tmp);
-                fwrite(&steps, sizeof(byte), 1, tmp);
-                ++elements;
-                steps = 0;
-                sign = new_sign;
-            }
-            if ( x == maze_size->x - 1) {
-                fwrite(&sign, sizeof(byte), 1, tmp);
-                fwrite(&steps, sizeof(byte), 1, tmp);
+                fwrite(&separator, sizeof(byte), 1, tmp);
+                fwrite(&wall, sizeof(byte), 1, tmp);
+                fwrite(&steps, sizeof(byte), 1, tmp);                
                 ++elements;
             }
+
+            // NEAR THAT CELL - DOESNT MATTER TO THE MAIN PATH!
+            fwrite(&separator, sizeof(byte), 1, tmp);
+            fwrite(&wall, sizeof(byte), 1, tmp);
+            fwrite(&steps, sizeof(byte), 1, tmp);                
+            ++elements;
         }
-        sign = 0;
-        steps = 1;
-        fwrite(&sign, sizeof(byte), 1, tmp);
+
+        fwrite(&separator, sizeof(byte), 1, tmp);
+        fwrite(&wall, sizeof(byte), 1, tmp);
         fwrite(&steps, sizeof(byte), 1, tmp);
         ++elements;
     }
@@ -132,18 +126,9 @@ byte encode_binary(FILE* output_file, FILE* steps_file,
     // the lower frame
     steps = 0;
     for( short i = 0; i < maze_size->x * 2 + 1; ++i) {
-        if ( steps == 255 ) {   // max for byte
-            ++i;                // steps-numeration from 0
-            fwrite(&sign, sizeof(byte), 1, tmp);
-            fwrite(&steps, sizeof(byte), 1, tmp);
-            steps = 0;
-            ++elements;
-        } else
-            ++steps;
-    }
-    if ( steps > 0 ) {
-        fwrite(&sign, sizeof(byte), 1, tmp);
-        fwrite(&steps, sizeof(byte), 1, tmp);
+        fwrite(&separator, sizeof(byte), 1, tmp);
+        fwrite(&wall, sizeof(byte), 1, tmp);
+        fwrite(&steps, sizeof(byte), 1, tmp);                
         ++elements;
     }
 

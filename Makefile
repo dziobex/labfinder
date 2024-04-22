@@ -11,3 +11,7 @@ decode.o: decoder.c dencoder.h bitish.h exit_codes.h
 
 mazerunner.o: mazerunner.c dencoder.h bitish.h exit_codes.h mazerunner.h
 	$(CC) -Wall -c mazerunner.c -o mazerunner.o
+
+.PHONY: clean
+clean:
+	rm -f *.o labfinder.exe labfinder.out

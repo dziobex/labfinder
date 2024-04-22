@@ -8,18 +8,19 @@
 #include "mazerunner.h"
 #include "exit_codes.h"
 
-void help(char* file) {
-    printf("POTRZEBUJESZ POMOCY? ZADZWON: +48 800 70 2222\n\n");
-    printf("UZYCIE PROGRAMU:\n\t%s -i <plik_wejsciowy> -o <plik_wyjsciowy> -c <kod_wejsciowy> -d <kod_wyjsciowy>\n", file);
-}
+void help(char* file);
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
+
+    // our data containers
     byte maze_struct[1024][128 * 2] = {};
     byte maze_flags[1024][128] = {};
 
+    // validating the args!
+    
     char *in_file = NULL, *out_file = NULL, *in_code = NULL, *out_code = NULL;
     int opt;
+
     while ((opt = getopt(argc, argv, ":i:o:c:d:")) != -1) {
         switch (opt) {
             case 'i':
@@ -39,19 +40,28 @@ int main(int argc, char **argv)
         }
     }
 
+    // the most important info - from where we will get the maze and how is it coded
+    // without it - farawell, miss/mr user!
     if ( in_file == NULL || in_code == NULL )
         return help(argv[0]), EXIT_FAILURE;
 
-    bit_pair maze_size;                         // size of the given maze
+    bit_pair maze_size;
     maze_size.x = maze_size.y = 0;
-    maze_cord in_cord, out_cord;                // cords of the in/out points
+
+    // coooords of in/out points
+    maze_cord in_cord, out_cord;
     in_cord.x = in_cord.y = 1111;
     out_cord.x = out_cord.y = 1111;
-    byte get_code = 1;                          // result of the file de/en coding
 
-    FILE *in;                                   // file
+    // get_code returns how the maze decoding went - failed or NOT
+    byte get_code = 1;
+
+    // from here we will (or not (︶︹︺) ), extract the maze
+    FILE *in;
     
-    if ( strcmp(in_code, "t") == 0 || strcmp(in_code, "b") == 0 ) {          // text coding
+    // only if the coding types are T (text) or B (bext... binary I meant)
+    
+    if ( strcmp(in_code, "t") == 0 || strcmp(in_code, "b") == 0 ) {
         in = fopen(in_file, (strcmp(in_code, "b") == 0) ? "rb" : "r" );
         if (in == NULL)
             return fprintf(stderr, "Nie udalo sie otworzyc pliku wejsciowego :(\n"), EXIT_FAILURE;
@@ -65,6 +75,7 @@ int main(int argc, char **argv)
     if ( strcmp(out_code, "t") != 0 && strcmp(out_code, "b") != 0 )
         return fprintf(stderr, "Nieprawidlowy typ kodowania pliku wyjsciowego!\nSprobuj tych: tekstowy (t), binarny (b)\n"), EXIT_FAILURE;
 
+    // how the maze decoding went - funny comments!
     switch (get_code) {
         default:
         case 0:
@@ -78,7 +89,7 @@ int main(int argc, char **argv)
             printf("Za duzo punktow wejscia/wyjscia.\n");
             return EXIT_FAILURE;
         case EMPTY_MAZE:
-            printf("Pusty labirynt? Serio? Tylko na to cie stac?\n");
+            printf("Pusty labirynt? Kurcze...\n");
             return EXIT_FAILURE;
         case NO_ENTRANCE:
             printf("Brakuje punktu wejscia/wyjscia.\n");
@@ -116,4 +127,9 @@ int main(int argc, char **argv)
     printf("Sciezka zapisana do pliku %s :)\n", out_file);
 
     return EXIT_SUCCESS;
+}
+
+void help(char* file) {
+    printf("POTRZEBUJESZ POMOCY? ZADZWON: +48 800 70 2222\n\n");
+    printf("UZYCIE PROGRAMU:\n\t%s -i <plik_wejsciowy> -o <plik_wyjsciowy> -c <kod_wejsciowy> -d <kod_wyjsciowy>\n", file);
 }

@@ -22,7 +22,7 @@ byte decode_txt(FILE* input_file, byte maze_struct[][256],
             if (x != 0 && maze_size->x == 0)
                 maze_size->x = x;
             else if (maze_size->x != x)
-                return LINES_NOT_EQUAL;             // rows aren't equal, this maze is mazzed up bruh 😭
+                return LINES_NOT_EQUAL;             // rows aren't equal, this maze is mazzed up!
             x = 0;
             continue;
         }
@@ -46,14 +46,15 @@ byte decode_txt(FILE* input_file, byte maze_struct[][256],
             if ( in_cord->x != 1111 )
                 return MULTI_ENTRANCE;
             if ( y == 0 )
-                in_dir = 0;         // G00ra
+                in_dir = 0;         // v
             else if ( x == 0 )      
-                in_dir = 3;         // L33wa
+                in_dir = 3;         // > 
             else if ( x >= maze_size->x - 1 )
-                in_dir = 1;         // Pr@@wa
+                in_dir = 1;         // <
             else
-                in_dir = 2;         //D00ł
-
+                in_dir = 2;         // ^
+            
+            // set the position of the IN cord
             in_cord->y = y / 2;
             in_cord->x = x / 2;
         }
@@ -61,31 +62,33 @@ byte decode_txt(FILE* input_file, byte maze_struct[][256],
             if ( out_cord->x != 1111 )
                 return MULTI_ENTRANCE;
             if ( y == 0 )
-                out_dir = 2;         // G00ra
+                out_dir = 2;         // ^
             else if ( x == 0 )      
-                out_dir = 1;         // L33wa
-            else if ( x >= maze_size->x - 1 )
-                out_dir = 3;         // Pr@@wa
+                out_dir = 1;         // <
+            else if ( x >= maze_size->x - 1 )   // assuming the maze_size->x will have some non-0 number
+                out_dir = 3;         // >
             else
-                out_dir = 0;         //D00ł
+                out_dir = 0;         // v
+            
+            // set the position of the OUT cord
             out_cord->y = y / 2;
             out_cord->x = x / 2;
         }
         ++x;
     }
+    // real maze dimensions (excluding the walls)
     maze_size->x /= 2;
     maze_size->y = y / 2;
 
     if ( maze_size->x < 1 || maze_size->x > 2049  || maze_size->y < 1 || maze_size->y > 2049 )
         return INVALID_DIMS;
 
-    // printf("%d %d ", maze_size->x, maze_size->y); // display maze's REAL size
-
     if ( maze_size->y == 0 || maze_size->x == 0)
         return EMPTY_MAZE;
     if ( in_cord->x == 1111 || out_cord->x == 1111 )
         return NO_ENTRANCE;
 
+    // the directions, from which we will get into the maze and get out of the maze
     in_cord->dir = in_dir;
     out_cord->dir = out_dir;
 
@@ -228,6 +231,8 @@ bit_pair get_bit_cords(short x) {
     cord.x = x % 8;
     return cord;
 }
+
+// read 1 byte in the form of 8 bits
 
 void read_bits(byte bitter) {
     for ( char i = 7; i >= 0; --i)

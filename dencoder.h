@@ -25,6 +25,10 @@ typedef struct {
                             // 0-TOP, 1-RIGHT, 2-BOTTOM, 3-LEFT
 } maze_cord;
 
+// just used for obtaining the data from binary files
+// some of that data will be useless
+// that's why union
+
 typedef union {
     uint32_t file_id;
     uint8_t esc;
